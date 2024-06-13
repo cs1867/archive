@@ -26,5 +26,5 @@
            ls -al /etc/yum.repos.d/build_artifacts_RPMS.repo
            cat /etc/yum.repos.d/build_artifacts_RPMS.repo
 
-           echo "make elmond"
+           echo "make archive"
            make
