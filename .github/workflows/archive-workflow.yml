@@ -81,6 +81,15 @@ jobs:
              path: artifacts
              github-token: ${{ secrets.GIT_ACTIONS }}
              run-id: ${{ github.event.inputs.LOGSTASHID }}
+
+        - name: Download host-metrics artifacts 
+          uses: actions/download-artifact@v4
+          with:
+             name: host-metrics-${{ github.event.inputs.OS }}
+             repository: cs1867/host-metrics
+             path: artifacts
+             github-token: ${{ secrets.GIT_ACTIONS }}
+             run-id: ${{ github.event.inputs.ELMONDID }}
         
 
         - name: run docker oneshot builder
