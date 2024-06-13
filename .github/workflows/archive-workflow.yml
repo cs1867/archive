@@ -89,7 +89,7 @@ jobs:
              repository: cs1867/host-metrics
              path: artifacts
              github-token: ${{ secrets.GIT_ACTIONS }}
-             run-id: ${{ github.event.inputs.ELMONDID }}
+             run-id: ${{ github.event.inputs.HOSTMETRICSID }}
         
 
         - name: run docker oneshot builder
