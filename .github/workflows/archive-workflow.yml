@@ -33,6 +33,9 @@ on:
       ELMONDID:
         description: 'Elmond build run id'
         required: true
+      LOGSTASHID:
+        description: 'Logstash build run id'
+        required: true
         
   workflow_run:
     workflows: "Create Artifacts and pass runid"
@@ -61,14 +64,23 @@ jobs:
              github-token: ${{ secrets.GIT_ACTIONS }}
              run-id: ${{ github.event.inputs.MINORPACKAGEID }}
 
-        - name: Download host-metrics artifacts 
+        - name: Download elmond artifacts 
           uses: actions/download-artifact@v4
           with:
-             name: host-metrics-${{ github.event.inputs.OS }}
-             repository: cs1867/host-metrics
+             name: elmond-${{ github.event.inputs.OS }}
+             repository: cs1867/elmond
              path: artifacts
              github-token: ${{ secrets.GIT_ACTIONS }}
-             run-id: ${{ github.event.inputs.HOSTMETRICSID }}
+             run-id: ${{ github.event.inputs.ELMONDID }}
+
+        - name: Download logstash artifacts 
+          uses: actions/download-artifact@v4
+          with:
+             name: logstash-${{ github.event.inputs.OS }}
+             repository: cs1867/logstash
+             path: artifacts
+             github-token: ${{ secrets.GIT_ACTIONS }}
+             run-id: ${{ github.event.inputs.LOGSTASHID }}
         
 
         - name: run docker oneshot builder
