@@ -100,6 +100,15 @@ jobs:
              github-token: ${{ secrets.GIT_ACTIONS }}
              run-id: ${{ github.event.inputs.PSCHEDULERID }}
 
+        - name: Download perl-shared artifacts 
+          uses: actions/download-artifact@v4
+          with:
+             name: perl-shared-ol8
+             repository: cs1867/perl-shared
+             path: artifacts
+             github-token: ${{ secrets.GIT_ACTIONS }}
+             run-id: ${{ github.event.inputs.PERLSHAREDID }}
+
              
         
 
