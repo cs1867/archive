@@ -30,6 +30,9 @@ on:
       PSCONFIGID:
         description: 'Psconfig build run id'
         required: true  
+      ELMONDID:
+        description: 'Elmond build run id'
+        required: true
         
   workflow_run:
     workflows: "Create Artifacts and pass runid"
