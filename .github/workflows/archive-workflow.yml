@@ -4,7 +4,7 @@ name: archive-workflow
   
 on:
    
-  workflow_dispatch: 
+  workflow_dispatch:  
     inputs:  
       OS: 
         description: 'OS to build'
