@@ -1,0 +1,105 @@
+#Workflow for GitHub Actions
+
+name: archive-workflow
+  
+on:
+   
+  workflow_dispatch: 
+    inputs:  
+      OS: 
+        description: 'OS to build'
+        required: true
+      MINORPACKAGEID:
+        description: 'Minor Package run id'
+        required: true
+      I2UTILID:
+        description: 'I2util build run id'
+        required: true  
+      OWAMPID:
+        description: 'Owamp build run id'
+        required: true 
+      PSCHEDULERID:
+        description: 'Pscheduler build run id'
+        required: true
+      PERLSHAREDID:
+        description: 'Perl Shared build run id'
+        required: true
+      HOSTMETRICSID:
+        description: 'Host metrics build run id'
+        required: true 
+      PSCONFIGID:
+        description: 'Psconfig build run id'
+        required: true  
+        
+  workflow_run:
+    workflows: "Create Artifacts and pass runid"
+    branches: 'github-workflow'
+    types:
+      - completed
+
+jobs:
+       
+  build-elmond:
+
+     runs-on: ubuntu-latest
+     
+     steps:
+        - name: Check out Repo
+          uses: actions/checkout@v4
+          with:
+           ref: 5.2.0
+          
+        - name: Download minor packages artifacts 
+          uses: actions/download-artifact@v4
+          with:
+             name: minor-packages-${{ github.event.inputs.OS }}
+             repository: cs1867/minor-packages
+             path: artifacts
+             github-token: ${{ secrets.GIT_ACTIONS }}
+             run-id: ${{ github.event.inputs.MINORPACKAGEID }}
+
+        - name: Download pscheduler artifacts 
+          uses: actions/download-artifact@v4
+          with:
+             name: host-metrics-${{ github.event.inputs.OS }}
+             repository: cs1867/host-metrics
+             path: artifacts
+             github-token: ${{ secrets.GIT_ACTIONS }}
+             run-id: ${{ github.event.inputs.HOSTMETRICSID }}
+        
+
+        - name: run docker oneshot builder
+          run: |
+           curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - --run github-workflow.sh . '${{ github.event.inputs.OS }}'  
+        
+        - uses: actions/upload-artifact@v3
+          with:
+          #Name the artifact uniquely
+            name: ${{ github.event.repository.name }}-${{ github.event.inputs.OS }}
+            #Where the finished product lives after the build
+            path: unibuild-repo
+            #Don't keep these for long.  This is just a test.
+            retention-days: 5
+         
+      #  - name: Pass workflow to  repo
+      #    uses: actions/github-script@v6
+      #    with:
+      #      github-token: ${{ secrets.GIT_ACTIONS }}
+      #      script: |
+      #        await github.rest.actions.createWorkflowDispatch({
+      #        owner: 'cs1867',
+      #        repo: '  ',
+      #        workflow_id: ' -docker.yml',
+      #        ref: 'github-docker',
+      #         inputs: {
+      #          OS: '${{ github.event.inputs.OS }}',
+      #          MINORPACKAGEID: '${{ github.event.inputs.MINORPACKAGEID }}',
+      #          I2UTILID: '${{ github.event.inputs.I2UTILID }}',
+      #          OWAMPID: '${{ github.event.inputs.OWAMPID }}',
+      #          PSCHEDULERID: '${{ github.event.inputs.PSCHEDULERID }}',
+      #          PERLSHAREID: '${{ github.event.inputs.PERLSHAREDID }}',
+      #          HOSTMETRICSID: '${{ github.event.inputs.HOSTMETRICSID }}',
+      #          BUNDLESID: '${{ github.event.inputs.BUNDLESID }}',
+      #          PSCONFIG: '${{ github.run_id }}'
+      #        }
+      #        
