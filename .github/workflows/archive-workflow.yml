@@ -90,6 +90,17 @@ jobs:
              path: artifacts
              github-token: ${{ secrets.GIT_ACTIONS }}
              run-id: ${{ github.event.inputs.HOSTMETRICSID }}
+
+        - name: Download pscheduler artifacts 
+          uses: actions/download-artifact@v4
+          with:
+             name: pscheduler-${{ github.event.inputs.OS }}
+             repository: cs1867/pscheduler
+             path: artifacts
+             github-token: ${{ secrets.GIT_ACTIONS }}
+             run-id: ${{ github.event.inputs.PSCHEDULERID }}
+
+             
         
 
         - name: run docker oneshot builder
