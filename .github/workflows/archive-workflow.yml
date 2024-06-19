@@ -93,6 +93,7 @@ jobs:
           run: |
             echo "Using the modified BUILD_VARS_JSON environment variable:"
             echo "$BUILD_VARS_JSON" | jq .
+            
         - name: Add GitHub run ID to buildids
           id: add_run_id
           run: |
@@ -108,7 +109,17 @@ jobs:
           run: |
             echo "Using the modified BUILD_VARS_JSON environment variable:"
             echo "$BUILD_VARS_JSON" | jq .
-
+            
+        - name: Look up the next repo name to build
+          id: extract_repo_name
+          run: |
+            echo "BUILD_VARS_JSON value is: $BUILD_VARS_JSON"
+            NEXTREPO=$(echo  "$BUILD_VARS_JSON"  | jq -r '.repos[0].name' )
+            echo "NEXTREPO=$NEXTREPO" >> $GITHUB_ENV  
+            
+        - name: Display NEXTREPO value
+          run: echo "The value of NEXTREPO is $NEXTREPO"  
+          
         - name: Pass workflow  
           uses: actions/github-script@v6
           with:
