@@ -3,38 +3,14 @@
 name: archive-workflow
   
 on:
-   
-  workflow_dispatch:  
+  
+  workflow_dispatch: 
     inputs:  
       OS: 
-        description: 'OS to build'
+        description: 'OS to build on' 
         required: true
-      MINORPACKAGEID:
-        description: 'Minor Package run id'
-        required: true
-      I2UTILID:
-        description: 'I2util build run id'
-        required: true  
-      OWAMPID:
-        description: 'Owamp build run id'
-        required: true 
-      PSCHEDULERID:
-        description: 'Pscheduler build run id'
-        required: true
-      PERLSHAREDID:
-        description: 'Perl Shared build run id'
-        required: true
-      HOSTMETRICSID:
-        description: 'Host metrics build run id'
-        required: true 
-      PSCONFIGID:
-        description: 'Psconfig build run id'
-        required: true  
-      ELMONDID:
-        description: 'Elmond build run id'
-        required: true
-      LOGSTASHID:
-        description: 'Logstash build run id'
+      BUILD_VARS_JSON:
+        description: 'Build var json file'
         required: true
         
   workflow_run:
@@ -45,7 +21,7 @@ on:
 
 jobs:
        
-  build-archive:
+  build-arcchive:
 
      runs-on: ubuntu-latest
      
@@ -54,63 +30,42 @@ jobs:
           uses: actions/checkout@v4
           with:
            ref: 5.2.0
-          
-        - name: Download minor packages artifacts 
-          uses: actions/download-artifact@v4
-          with:
-             name: minor-packages-${{ github.event.inputs.OS }}
-             repository: cs1867/minor-packages
-             path: artifacts
+           
+        - name: Fetch workflow script from projects
+          env:
              github-token: ${{ secrets.GIT_ACTIONS }}
-             run-id: ${{ github.event.inputs.MINORPACKAGEID }}
-
-        - name: Download elmond artifacts 
-          uses: actions/download-artifact@v4
-          with:
-             name: elmond-${{ github.event.inputs.OS }}
-             repository: cs1867/elmond
-             path: artifacts
-             github-token: ${{ secrets.GIT_ACTIONS }}
-             run-id: ${{ github.event.inputs.ELMONDID }}
-
-        - name: Download logstash artifacts 
-          uses: actions/download-artifact@v4
-          with:
-             name: logstash-${{ github.event.inputs.OS }}
-             repository: cs1867/logstash
-             path: artifacts
-             github-token: ${{ secrets.GIT_ACTIONS }}
-             run-id: ${{ github.event.inputs.LOGSTASHID }}
-
-        - name: Download host-metrics artifacts 
-          uses: actions/download-artifact@v4
-          with:
-             name: host-metrics-${{ github.event.inputs.OS }}
-             repository: cs1867/host-metrics
-             path: artifacts
-             github-token: ${{ secrets.GIT_ACTIONS }}
-             run-id: ${{ github.event.inputs.HOSTMETRICSID }}
-
-        - name: Download pscheduler artifacts 
-          uses: actions/download-artifact@v4
-          with:
-             name: pscheduler-${{ github.event.inputs.OS }}
-             repository: cs1867/pscheduler
-             path: artifacts
-             github-token: ${{ secrets.GIT_ACTIONS }}
-             run-id: ${{ github.event.inputs.PSCHEDULERID }}
-
-        - name: Download psconfig artifacts 
-          uses: actions/download-artifact@v4
-          with:
-             name: psconfig-${{ github.event.inputs.OS }}
-             repository: cs1867/psconfig
-             path: artifacts
-             github-token: ${{ secrets.GIT_ACTIONS }}
-             run-id: ${{ github.event.inputs.PSCONFIGID }}
-
-             
+          run: |
+            git clone https://github.com/cs1867/project.git project
+            cp project/toolbox/workflows/github-workflow.sh .    
         
+        - name: Pretty-print BUILD_VARS_JSON
+          run: |
+            echo '${{ github.event.inputs.BUILD_VARS_JSON }}'
+            
+        - name: Extract dependencies
+          id: extract_deps
+          run: |
+            echo '${{ github.event.inputs.BUILD_VARS_JSON }}' | jq -r '.repos[] | select(.name == "${{ github.event.repository.name }}") | .deps[]' > deps.txt
+            echo "Dependencies:"
+            cat deps.txt
+       
+        - name: Download artifacts
+          run: |
+            mkdir -p artifacts
+            while IFS= read -r repo; do
+              echo "Downloading artifact for $repo"
+              run_id=$(echo '${{ github.event.inputs.BUILD_VARS_JSON }}' | jq -r ".buildids | .[\"$repo\"]")
+              echo "rund id $run_id"
+              gh run download $run_id --repo cs1867/$repo -D artifacts/$repo --name "$repo-${{ github.event.inputs.OS }}"  
+              artifact_path="artifacts/$repo"
+              echo "list artifact path"
+              ls -al "$artifact_path"
+              mkdir -p artifacts/RPMS
+              echo "copy to the artifacts RPM dir"
+              cp "$artifact_path"/RPMS/*.rpm artifacts/RPMS
+            done < deps.txt
+          env:
+            GITHUB_TOKEN: ${{ secrets.GIT_ACTIONS }}
 
         - name: run docker oneshot builder
           run: |
@@ -118,34 +73,54 @@ jobs:
         
         - uses: actions/upload-artifact@v3
           with:
-          #Name the artifact uniquely
             name: ${{ github.event.repository.name }}-${{ github.event.inputs.OS }}
-            #Where the finished product lives after the build
             path: unibuild-repo
-            #Don't keep these for long.  This is just a test.
             retention-days: 5
-         
-        - name: Pass workflow to grafana repo
+            
+        - name: Delete current repo from build
+          id: modify_json
+          run: |
+  
+            modified_json=$(echo '${{ github.event.inputs.BUILD_VARS_JSON }}' | jq 'del(.repos[0])')
+            echo "Modified JSON:"
+            echo "$modified_json" | jq .
+            BUILD_VARS_JSON=$(echo "$modified_json" | jq -c '.')
+            echo "BUILD_VARS_JSON=$BUILD_VARS_JSON" >> $GITHUB_ENV
+            echo "**** next next ****"
+            echo "BUILD_VARS_JSON=$BUILD_VARS_JSON"  
+            
+        - name: Use modified BUILD_VARS_JSON
+          run: |
+            echo "Using the modified BUILD_VARS_JSON environment variable:"
+            echo "$BUILD_VARS_JSON" | jq .
+        - name: Add GitHub run ID to buildids
+          id: add_run_id
+          run: |
+            GITHUB_RUN_ID=${{ github.run_id }}
+            modified_json=$(echo "$BUILD_VARS_JSON"  | jq --arg run_id "$GITHUB_RUN_ID" '."${{ github.event.repository.name }}" = $run_id')
+            echo "Modified JSON with GitHub run ID:"
+            echo "$modified_json" | jq .
+            BUILD_VARS_JSON=$(echo "$modified_json" | jq -c '.')
+            echo "BUILD_VARS_JSON=$BUILD_VARS_JSON" >> $GITHUB_ENV
+            echo "BUILD_VARS_JSON=$BUILD_VARS_JSON"  
+            
+        - name: Use modified BUILD_VARS_JSON with run id
+          run: |
+            echo "Using the modified BUILD_VARS_JSON environment variable:"
+            echo "$BUILD_VARS_JSON" | jq .
+
+        - name: Pass workflow  
           uses: actions/github-script@v6
           with:
             github-token: ${{ secrets.GIT_ACTIONS }}
             script: |
               await github.rest.actions.createWorkflowDispatch({
               owner: 'cs1867',
-              repo: 'grafana',
-              workflow_id: 'grafana-workflow.yml',
+              repo: '${{ env.NEXTREPO}}',
+              workflow_id: '${{ env.NEXTREPO}}-workflow.yml',
               ref: 'github-workflow',
                inputs: {
-                OS: '${{ github.event.inputs.OS }}',
-                MINORPACKAGEID: '${{ github.event.inputs.MINORPACKAGEID }}',
-                I2UTILID: '${{ github.event.inputs.I2UTILID }}',
-                OWAMPID: '${{ github.event.inputs.OWAMPID }}',
-                PSCHEDULERID: '${{ github.event.inputs.PSCHEDULERID }}',
-                PERLSHAREDID: '${{ github.event.inputs.PERLSHAREDID }}',
-                HOSTMETRICSID: '${{ github.event.inputs.HOSTMETRICSID }}',
-                PSCONFIGID: '${{ github.event.inputs.PSCONFIGID }}',
-                ELMONDID: '${{ github.event.inputs.ELMONDID }}',
-                LOGSTASHID: '${{ github.event.inputs.LOGSTASHID }}',
-                ARCHIVEID: '${{ github.run_id }}'
+              OS:  '${{ github.event.inputs.OS }}',
+              BUILD_VARS_JSON: '${{ env.BUILD_VARS_JSON}}'
               }
-              })
+              })   
