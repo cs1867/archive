@@ -4,6 +4,9 @@ on:
   
   workflow_dispatch: 
     inputs:  
+      BUILD_BRANCH:
+        description: 'Branch to build'
+        required: true
       OS: 
         description: 'OS to build on' 
         required: true
@@ -40,7 +43,7 @@ jobs:
         - name: Check out Repo
           uses: actions/checkout@v4
           with:
-           ref: 5.2.0
+           ref: ${{ github.event.inputs.BUILD_BRANCH}}
            
         - name: Fetch workflow script from projects
           env:
@@ -154,6 +157,7 @@ jobs:
               ref: 'github-workflow',
                inputs: {
               OS:  '${{ github.event.inputs.OS }}',
-              BUILD_VARS_JSON: '${{ env.BUILD_VARS_JSON}}'
+              BUILD_VARS_JSON: '${{ env.BUILD_VARS_JSON}}',
+              BUILD_BRANCH: '${{ github.event.inputs.BUILD_BRANCH }}'
               }
               })   
