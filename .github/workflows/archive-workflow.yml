@@ -50,7 +50,11 @@ jobs:
              github-token: ${{ secrets.GIT_ACTIONS }}
           run: |
             git clone https://github.com/cs1867/project.git project
-            cp project/toolbox/workflows/github-workflow.sh .    
+            if [ "${{ github.event.inputs.OS }}" == 'ol8' ] || [ "${{ github.event.inputs.OS }}" == 'el9' ]; then
+              cp project/toolbox/workflows/github-el-workflow.sh .
+              elif [ "${{ github.event.inputs.OS }}" == 'd11' ] || [ "${{ github.event.inputs.OS }}" == 'd12' ]; then
+              cp project/toolbox/workflows/github-db-workflow.sh .
+            fi 
         
         - name: Pretty-print BUILD_VARS_JSON
           run: |
@@ -83,8 +87,12 @@ jobs:
 
         - name: run docker oneshot builder
           run: |
-           curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - --run github-workflow.sh . '${{ github.event.inputs.OS }}'  
-        
+            if [ "${{ github.event.inputs.OS }}" == 'ol8' ] || [ "${{ github.event.inputs.OS }}" == 'el9' ]; then
+              curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - --run github-el-workflow.sh . '${{ github.event.inputs.OS }}'
+              elif [ "${{ github.event.inputs.OS }}" == 'd11' ] || [ "${{ github.event.inputs.OS }}" == 'd12' ]; then
+              curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - --run github-db-workflow.sh . '${{ github.event.inputs.OS }}'
+            fi
+            
         - uses: actions/upload-artifact@v3
           with:
             name: ${{ github.event.repository.name }}-${{ github.event.inputs.OS }}
