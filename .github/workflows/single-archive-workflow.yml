@@ -54,6 +54,12 @@ jobs:
           artifact_path="artifacts/psconfig"
           echo "Listing artifact path:"
           ls -al "$artifact_path"
+          echo "Downloading artifact for elmond"
+          echo "Run ID: 12056387950"
+          gh run download 12056387950 --repo cs1867/elmond -D artifacts/elmond --name "elmond-${{ env.BUILD_OS }}"  
+          artifact_path="artifacts/elmond"
+          echo "Listing artifact path:"
+          ls -al "$artifact_path"
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_ACTIONS }}
 
