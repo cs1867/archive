@@ -60,6 +60,12 @@ jobs:
           artifact_path="artifacts/elmond"
           echo "Listing artifact path:"
           ls -al "$artifact_path"
+          cho "Downloading artifact for host-metrics"
+          echo "Run ID: 12056060762"
+          gh run download 12056060762 --repo cs1867/host-metrics -D artifacts/host-metrics --name "host-metrics-${{ env.BUILD_OS }}"  
+          artifact_path="artifacts/host-metrics"
+          echo "Listing artifact path:"
+          ls -al "$artifact_path"
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_ACTIONS }}
 
