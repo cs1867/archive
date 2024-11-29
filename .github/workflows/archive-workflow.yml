@@ -58,7 +58,7 @@ jobs:
               'ol8'|'el9')
                  cp project/toolbox/workflows/github-el-workflow.sh .
                  ;;
-              'd11'|'d12'|'u20'|'u24')
+              'd11'|'d12'|'u20'|'u22'|'u24')
                 cp project/toolbox/workflows/github-db-workflow.sh .
                 ;;
             esac
@@ -100,7 +100,7 @@ jobs:
                   echo "copy to the artifacts RPM dir"
                   cp "$artifact_path"/RPMS/*.rpm artifacts/RPMS
                  ;;
-                'd11'|'d12'|'u20'|'u24')                
+                'd11'|'d12'|'u20'|'u22'|'u24')                
                   mkdir -p artifacts/DEBS
                   echo "copy to the artifacts DEBS dir"
                   cp -r "$artifact_path"/* artifacts/DEBS
@@ -118,7 +118,7 @@ jobs:
                 'ol8'|'el9')              
                    curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - --run github-el-workflow.sh . '${{ env.BUILD_OS }}'  
                 ;;
-                'd11'|'d12'|'u20'|'u24')                
+                'd11'|'d12'|'u20'|'u22'|'u24')                
                   curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - --run github-db-workflow.sh . '${{ env.BUILD_OS }}'
                 ;;
               esac
