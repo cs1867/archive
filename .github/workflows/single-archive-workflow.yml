@@ -65,8 +65,8 @@ jobs:
           gh run download 12215363367 --repo cs1867/host-metrics -D artifacts/host-metrics --name "host-metrics-${{ env.BUILD_OS }}"  
           artifact_path="artifacts/logstash" 
           echo "Downloading artifact for logstash"
-          echo "Run ID: 12215363367"
-          gh run download 12215363367 --repo cs1867/logstash -D artifacts/logstash --name "logstash-${{ env.BUILD_OS }}"  
+          echo "Run ID: 12216154334"
+          gh run download 12216154334 --repo cs1867/logstash -D artifacts/logstash --name "logstash-${{ env.BUILD_OS }}"  
           artifact_path="artifacts/logstash"
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_ACTIONS }}
