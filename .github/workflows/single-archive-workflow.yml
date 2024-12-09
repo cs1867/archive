@@ -41,39 +41,29 @@ jobs:
       - name: Download artifacts
         run: |
           mkdir -p artifacts
-          echo "Downloading artifact for /minor-packages"
-          artifact_path="artifacts//minor-packages"
+          echo "Downloading artifact for minor-packages"
           echo "Run ID: 12214258505"
           gh run download 12214258505 --repo cs1867/minor-packages -D artifacts/minor-packages --name "minor-packages-${{ env.BUILD_OS }}"
-          pwd
-          ls -al 
-          echo "list artifacts path"
-          ls -al "$artifact_path"
           artifact_path="artifacts/pscheduler"
           echo "Downloading artifact for pscheduler"
           echo "Run ID: 12214356399"
           gh run download 12214356399 --repo cs1867/pscheduler -D artifacts/pscheduler --name "pscheduler-${{ env.BUILD_OS }}"  
-          artifact_path="artifacts/pscheduler"
           echo "Downloading artifact for perl-shared"
           echo "Run ID: 12214489752"
           gh run download 12214489752 --repo cs1867/perl-shared -D artifacts/perl-shared --name "perl-shared-${{ env.BUILD_OS }}"  
-          artifact_path="artifacts/perl-shared"
           echo "Downloading artifact for psconfig"
           echo "Run ID: 12214537914"
           gh run download 12214537914 --repo cs1867/psconfig -D artifacts/psconfig --name "psconfig-${{ env.BUILD_OS }}"  
-          artifact_path="artifacts/psconfig"
           echo "Downloading artifact for elmond"
           echo "Run ID: 12215386153"
           gh run download 12215386153 --repo cs1867/elmond -D artifacts/elmond --name "elmond-${{ env.BUILD_OS }}"  
-          artifact_path="artifacts/elmond"
           echo "Downloading artifact for host-metrics"
           echo "Run ID: 12215363367"
           gh run download 12215363367 --repo cs1867/host-metrics -D artifacts/host-metrics --name "host-metrics-${{ env.BUILD_OS }}"  
-          artifact_path="artifacts/logstash" 
           echo "Downloading artifact for logstash"
           echo "Run ID: 12216154334"
           gh run download 12216154334 --repo cs1867/logstash -D artifacts/logstash --name "logstash-${{ env.BUILD_OS }}"  
-          artifact_path="artifacts/logstash"
+          ls -al artifacts/
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_ACTIONS }}
 
