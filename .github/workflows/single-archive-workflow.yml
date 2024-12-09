@@ -36,13 +36,17 @@ jobs:
       - name: show run id
         run: |
           echo "${{ github.run_id }}"
+          
       # Download artifacts
       - name: Download artifacts
         run: |
           mkdir -p artifacts
           echo "Downloading artifact for minor packages"
           echo "Run ID: 12214258505"
-          gh run download 12214258505 --repo cs1867/minor-packages -D artifacts/minor-packages --name "minor-packages-${{ env.BUILD_OS }}"  
+          gh run download 12214258505 --repo cs1867/minor-packages -D artifacts/minor-packages --name "minor-packages-${{ env.BUILD_OS }}"
+          pwd
+          ls -al 
+          ls -al "$artifact_path"
       #    artifact_path="artifacts/pscheduler"
       #    echo "Downloading artifact for pscheduler"
       #    echo "Run ID: 12214356399"
@@ -88,4 +92,4 @@ jobs:
       #  with:
       #    name: ${{ github.event.repository.name }}-${{ env.BUILD_OS }}
       #    path: unibuild-repo
-          retention-days: 5
+      #   retention-days: 5
