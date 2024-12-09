@@ -41,11 +41,13 @@ jobs:
       - name: Download artifacts
         run: |
           mkdir -p artifacts
-          echo "Downloading artifact for minor packages"
+          echo "Downloading artifact for /minor-packages"
+          artifact_path="artifacts//minor-packages"
           echo "Run ID: 12214258505"
           gh run download 12214258505 --repo cs1867/minor-packages -D artifacts/minor-packages --name "minor-packages-${{ env.BUILD_OS }}"
           pwd
           ls -al 
+          echo "list artifacts path"
           ls -al "$artifact_path"
       #    artifact_path="artifacts/pscheduler"
       #    echo "Downloading artifact for pscheduler"
