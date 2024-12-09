@@ -59,9 +59,15 @@ jobs:
                  cp project/toolbox/workflows/github-el-workflow.sh .
                  ;;
               'd11'|'d12'|'u20'|'u22'|'u24')
+                ls -al project/toolbox/workflows/
                 cp project/toolbox/workflows/github-u20-workflow.sh .
+                ls -al 
                 ;;
             esac
+
+            
+
+            
         
         - name: Pretty-print BUILD_VARS_JSON
           run: |
