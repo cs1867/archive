@@ -3,7 +3,7 @@ name: single-archive-workflow
 on: 
   push:
     branches: 
-      - github-workflow 
+      - github-workflow
 env: 
   BUILD_OS: u20 
 
