@@ -49,49 +49,49 @@ jobs:
           ls -al 
           echo "list artifacts path"
           ls -al "$artifact_path"
-      #    artifact_path="artifacts/pscheduler"
-      #    echo "Downloading artifact for pscheduler"
-      #    echo "Run ID: 12214356399"
-      #    gh run download 12214356399 --repo cs1867/pscheduler -D artifacts/pscheduler --name "pscheduler-${{ env.BUILD_OS }}"  
-      #    artifact_path="artifacts/pscheduler"
-      #    echo "Downloading artifact for perl-shared"
-      #    echo "Run ID: 12214489752"
-      #    gh run download 12214489752 --repo cs1867/perl-shared -D artifacts/perl-shared --name "perl-shared-${{ env.BUILD_OS }}"  
-      #    artifact_path="artifacts/perl-shared"
-      #    echo "Downloading artifact for psconfig"
-      #    echo "Run ID: 12214537914"
-      #    gh run download 12214537914 --repo cs1867/psconfig -D artifacts/psconfig --name "psconfig-${{ env.BUILD_OS }}"  
-      #    artifact_path="artifacts/psconfig"
-      #    echo "Downloading artifact for elmond"
-      #    echo "Run ID: 12215386153"
-      #    gh run download 12215386153 --repo cs1867/elmond -D artifacts/elmond --name "elmond-${{ env.BUILD_OS }}"  
-      #    artifact_path="artifacts/elmond"
-      #    echo "Downloading artifact for host-metrics"
-      #    echo "Run ID: 12215363367"
-      #    gh run download 12215363367 --repo cs1867/host-metrics -D artifacts/host-metrics --name "host-metrics-${{ env.BUILD_OS }}"  
-      #    artifact_path="artifacts/logstash" 
-      #    echo "Downloading artifact for logstash"
-      #    echo "Run ID: 12216154334"
-      #    gh run download 12216154334 --repo cs1867/logstash -D artifacts/logstash --name "logstash-${{ env.BUILD_OS }}"  
-      #    artifact_path="artifacts/logstash"
+          artifact_path="artifacts/pscheduler"
+          echo "Downloading artifact for pscheduler"
+          echo "Run ID: 12214356399"
+          gh run download 12214356399 --repo cs1867/pscheduler -D artifacts/pscheduler --name "pscheduler-${{ env.BUILD_OS }}"  
+          artifact_path="artifacts/pscheduler"
+          echo "Downloading artifact for perl-shared"
+          echo "Run ID: 12214489752"
+          gh run download 12214489752 --repo cs1867/perl-shared -D artifacts/perl-shared --name "perl-shared-${{ env.BUILD_OS }}"  
+          artifact_path="artifacts/perl-shared"
+          echo "Downloading artifact for psconfig"
+          echo "Run ID: 12214537914"
+          gh run download 12214537914 --repo cs1867/psconfig -D artifacts/psconfig --name "psconfig-${{ env.BUILD_OS }}"  
+          artifact_path="artifacts/psconfig"
+          echo "Downloading artifact for elmond"
+          echo "Run ID: 12215386153"
+          gh run download 12215386153 --repo cs1867/elmond -D artifacts/elmond --name "elmond-${{ env.BUILD_OS }}"  
+          artifact_path="artifacts/elmond"
+          echo "Downloading artifact for host-metrics"
+          echo "Run ID: 12215363367"
+          gh run download 12215363367 --repo cs1867/host-metrics -D artifacts/host-metrics --name "host-metrics-${{ env.BUILD_OS }}"  
+          artifact_path="artifacts/logstash" 
+          echo "Downloading artifact for logstash"
+          echo "Run ID: 12216154334"
+          gh run download 12216154334 --repo cs1867/logstash -D artifacts/logstash --name "logstash-${{ env.BUILD_OS }}"  
+          artifact_path="artifacts/logstash"
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_ACTIONS }}
 
       # Run docker oneshot builder and workflow script
-      #- name: Run Docker oneshot builder
-      #  run: |
-      #    case "${{ env.BUILD_OS }}" in
-      #      'ol8'|'el9')
-      #        curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - --run github-el-workflow.sh . '${{ env.BUILD_OS }}'
-      #        ;;
-      #      'd11'|'d12'|'u20'|'u24')
-      #        curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - --run github_u20_workflow.sh . '${{ env.BUILD_OS }}'
-      #        ;;
-      #    esac
+      - name: Run Docker oneshot builder
+        run: |
+          case "${{ env.BUILD_OS }}" in
+            'ol8'|'el9')
+              curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - --run github-el-workflow.sh . '${{ env.BUILD_OS }}'
+              ;;
+            'd11'|'d12'|'u20'|'u24')
+              curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - --run github_u20_workflow.sh . '${{ env.BUILD_OS }}'
+              ;;
+          esac
       # Upload artifact
-      #- name: Upload artifact
-      #  uses: actions/upload-artifact@v3
-      #  with:
-      #    name: ${{ github.event.repository.name }}-${{ env.BUILD_OS }}
-      #    path: unibuild-repo
-      #   retention-days: 5
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }}-${{ env.BUILD_OS }}
+          path: unibuild-repo
+          retention-days: 5
