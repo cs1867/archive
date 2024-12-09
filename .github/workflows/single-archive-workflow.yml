@@ -64,24 +64,25 @@ jobs:
           echo "Run ID: 12216154334"
           gh run download 12216154334 --repo cs1867/logstash -D artifacts/logstash --name "logstash-${{ env.BUILD_OS }}"  
           ls -al artifacts/
+          apt-cache search opensearch
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_ACTIONS }}
 
-      # Run docker oneshot builder and workflow script
-      - name: Run Docker oneshot builder
-        run: |
-          case "${{ env.BUILD_OS }}" in
-            'ol8'|'el9')
-              curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - --run github-el-workflow.sh . '${{ env.BUILD_OS }}'
-              ;;
-            'd11'|'d12'|'u20'|'u24')
-              curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - --run github_u20_workflow.sh . '${{ env.BUILD_OS }}'
-              ;;
-          esac
-      # Upload artifact
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ github.event.repository.name }}-${{ env.BUILD_OS }}
-          path: unibuild-repo
-          retention-days: 5
+    #  # Run docker oneshot builder and workflow script
+    #  - name: Run Docker oneshot builder
+    #    run: |
+    #      case "${{ env.BUILD_OS }}" in
+    #        'ol8'|'el9')
+    #          curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - --run github-el-workflow.sh . '${{ env.BUILD_OS }}'
+    #          ;;
+    #        'd11'|'d12'|'u20'|'u24')
+    #          curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - --run github_u20_workflow.sh . '${{ env.BUILD_OS }}'
+    #          ;;
+    #      esac
+    #  # Upload artifact
+    #  - name: Upload artifact
+    #    uses: actions/upload-artifact@v3
+    #    with:
+    #      name: ${{ github.event.repository.name }}-${{ env.BUILD_OS }}
+    #      path: unibuild-repo
+    #      retention-days: 5
