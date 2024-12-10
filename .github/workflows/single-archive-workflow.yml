@@ -1,7 +1,7 @@
 name: single-archive-workflow
 
 on: 
-  push:
+  push:  
     branches: 
       - github-workflow 
 env:
