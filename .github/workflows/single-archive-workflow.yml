@@ -45,7 +45,7 @@ jobs:
           echo "Run ID: 12224991337"
           gh run download 12224991337 --repo cs1867/minor-packages -D artifacts/minor-packages --name "minor-packages-${{ env.BUILD_OS }}"
           artifact_path="artifacts/pscheduler"
-          #echo "Downloading artifact for pscheduler"
+          echo "Downloading artifact for pscheduler"
           echo "Run ID: 12214356399"
           gh run download 12214356399 --repo cs1867/pscheduler -D artifacts/pscheduler --name "pscheduler-${{ env.BUILD_OS }}"  
           echo "Downloading artifact for perl-shared"
@@ -79,10 +79,10 @@ jobs:
           esac
 
           
-    #  # Upload artifact
-    #  - name: Upload artifact
-    #    uses: actions/upload-artifact@v3
-    #    with:
-    #      name: ${{ github.event.repository.name }}-${{ env.BUILD_OS }}
-    #      path: unibuild-repo
-    #      retention-days: 5
+      # Upload artifact
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }}-${{ env.BUILD_OS }}
+          path: unibuild-repo
+          retention-days: 5
