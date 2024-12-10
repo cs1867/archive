@@ -60,15 +60,11 @@ jobs:
                  ;;
               'd11'|'d12'|'u20'|'u22'|'u24')
                 ls -al project/toolbox/workflows/
-                cp project/toolbox/workflows/github-u20-workflow.sh .
+                cp project/toolbox/workflows/github-workflow-db-skip-install.sh .
                 ls -al 
                 ;;
             esac
 
-            
-
-            
-        
         - name: Pretty-print BUILD_VARS_JSON
           run: |
             echo "$BUILD_VARS_JSON"
@@ -121,7 +117,7 @@ jobs:
                    curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - --run github-el-workflow.sh . '${{ env.BUILD_OS }}'  
                 ;;
                 'd11'|'d12'|'u20'|'u22'|'u24')                
-                  curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - --run github-u20-workflow.sh . '${{ env.BUILD_OS }}'
+                  curl -s https://raw.githubusercontent.com/perfsonar/docker-oneshot-builder/main/build | sh -s - --run github-workflow-db-skip-install.sh . '${{ env.BUILD_OS }}'
                 ;;
               esac
             
